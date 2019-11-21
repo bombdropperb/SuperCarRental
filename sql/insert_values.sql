@@ -1,0 +1,1 @@
+insert into vehicle (1, 'SCR 101', 'Available', 'Truck', 'UBC');
