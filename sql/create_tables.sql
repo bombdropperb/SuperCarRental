@@ -1,6 +1,7 @@
 create table vehicle (
 	vid integer not null,
 	vlicense varchar(7) not null PRIMARY KEY,
+	odometer integer not null,
 	status varchar(12) not null,
 	vtname char not null references vehicleType,
 	location not null
