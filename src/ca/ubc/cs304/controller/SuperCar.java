@@ -4,17 +4,23 @@ import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.Customer;
+import ca.ubc.cs304.model.Reservation;
+import ca.ubc.cs304.model.Vehicle;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * This is the main controller class that will orchestrate everything.
  */
-public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
+public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	private DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
-	public Bank() {
+	public SuperCar() {
 		dbHandler = new DatabaseConnectionHandler();
 	}
 	
@@ -76,7 +82,27 @@ public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	dbHandler.updateBranch(branchId, name);
     }
 
-    /**
+	@Override
+	public Boolean existingCustomer(int dLicense) {
+		return dbHandler.existingCustomer(dLicense);
+	}
+
+	@Override
+	public void insertCustomer(Customer customer) {
+		dbHandler.insertCustomer(customer);
+	}
+
+	@Override
+	public void reserveVehicle(Reservation reserve) {
+		dbHandler.reserveVehicle(reserve);
+	}
+
+	@Override
+	public ArrayList<Vehicle> viewVehicle(String vtname, String time, String location) {
+		return dbHandler.viewVehicle(vtname, time, location);
+	}
+
+	/**
 	 * TermainalTransactionsDelegate Implementation
 	 * 
 	 * Displays information about varies bank branches.
@@ -123,7 +149,7 @@ public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * Main method called at launch time
 	 */
 	public static void main(String args[]) {
-		Bank bank = new Bank();
-		bank.start();
+		SuperCar superCar = new SuperCar();
+		superCar.start();
 	}
 }
