@@ -1,14 +1,12 @@
-create table vehicle (
-	vid integer not null,
-	vlicense varchar(7) not null PRIMARY KEY,
-	odometer integer not null,
-	status varchar(12) not null,
-	vtname char not null references vehicleType,
-	location not null
-);
+drop table return;
+drop table rentals;
+drop table reservation;
+drop table customer;
+drop table vehicles;
+drop table vehicleType;
 
 create table vehicleType (
-	vtname varchar(12) not null PRIMARY KEY,
+	vtname char(20) not null PRIMARY KEY,
 	wrate integer not null,
 	drate integer not null,
 	hrate integer not null,
@@ -18,41 +16,50 @@ create table vehicleType (
 	krate integer not null
 );
 
-create table customer (
-	cellphone integer not null,
-	name char not null,
-	address char not null,
-	dlicense char not null PRIMARY KEY
+create table vehicles (
+	vid integer not null,
+	vlicense char(20) not null PRIMARY KEY,
+	odometer char(20) not null,
+	status char(20) not null,
+	vtname char(20) not null references vehicleType,
+	location char(20) not null
 );
 
-create table return (
-	rid integer not null references rentals PRIMARY KEY,
-	date char not null,
-	time char not null,
-	odometer char not null,
-	fulltank char not null,
-	value integer not null
+create table customer (
+	cellphone integer not null,
+	name char(20) not null,
+	address char(20) not null,
+	dlicense char(20) not null PRIMARY KEY
 );
 
 create table reservation (
 	confNo integer not null PRIMARY KEY,
-	vtname char not null references vehicleType,
-	dlicense char not null references customer,
-	fromDate char not null,
-	fromTime char not null,
-	toDate char not null,
-	toTime char not null
+	vtname char(20) not null references vehicleType,
+	dlicense char(20) not null references customer,
+	fromDate char(20) not null,
+	fromTime char(20) not null,
+	toDate char(20) not null,
+	toTime char(20) not null
 );
 
 create table rentals (
 	rid integer not null PRIMARY KEY,
-	vid integer not null references vehicles,
-	dlicense char not null references customer,
-	fromDate char not null,
-	fromTime char not null,
-	toDate char not null,
-	toTime char not null,
+	vlicense char(20) not null references vehicles,
+	dlicense char(20) not null references customer,
+	fromDate char(20) not null,
+	fromTime char(20) not null,
+	toDate char(20) not null,
+	toTime char(20) not null,
 	odometer integer not null,
 	confNo integer not null references reservation
+);
+
+create table return (
+	rid integer not null references rentals PRIMARY KEY,
+	dateR char(20) not null,
+	timeR char(20) not null,
+	odometer char(20) not null,
+	fulltank char(20) not null,
+	valueR integer not null
 );
 
