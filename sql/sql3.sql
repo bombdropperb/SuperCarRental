@@ -1,3 +1,8 @@
+insert into customer values (1,'John Smith', 'bender st;', 1);
+insert into customer values (2,'Mary Jane', 'mary st', 2);
+insert into customer values (3,'Peter Porker', 'homeless', 3);
+insert into customer values (4,'Steven Seagull', 'richmond', 4);
+
 insert into vehicleType values ('Truck', 1200, 320, 44, 80, 20, 5, 1);
 insert into vehicleType values ('Suv', 1290, 370, 56, 80, 20, 5, 1);
 insert into vehicleType values ('Full-size', 1290, 410, 56, 80, 20, 4 ,1);
@@ -26,6 +31,12 @@ insert into vehicles values (17, 'SCR 117', 100000, 'Available', 'Economy', 'UBC
 insert into vehicles values (18, 'SCR 118', 15000, 'Available', 'Compact', 'UBC');
 insert into vehicles values (19, 'SCR 119', 125000, 'Available', 'Mid-size', 'UBC');
 insert into vehicles values (20, 'SCR 120', 75000, 'Available', 'Standard', 'UBC');
+insert into vehicles values (21, 'SCR 121', 71000, 'Available', 'Standard', 'Richmond');
+insert into vehicles values (22, 'SCR 122', 21000, 'Available', 'Mid-size', 'Richmond');
+insert into vehicles values (23, 'SCR 123', 31000, 'Available', 'Compact', 'Richmond');
+insert into vehicles values (24, 'SCR 124', 41000, 'Available', 'Economy', 'Richmond');
+insert into vehicles values (25, 'SCR 125', 51000, 'Available', 'Full-size', 'Richmond');
+insert into vehicles values (26, 'SCR 126', 761000, 'Available', 'Suv', 'Richmond');
 
-insert into reservation values (1, 'Truck', 'A1', '11/21/2019', '700', '11/22/2019', '1500');
-insert into reservation values (2, 'Economy', 'A1', '11/21/2019', '700', '11/22/2019', '1500');
+insert into reservation values (1, 'Truck', 4, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 1500);
+insert into reservation values (2, 'Economy', 2, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 2400);
