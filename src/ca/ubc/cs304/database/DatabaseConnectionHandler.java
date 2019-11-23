@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ca.ubc.cs304.model.*;
+import oracle.sql.DATE;
 
 /**
  * This class handles all database related transactions
@@ -36,7 +37,190 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public HashMap<String, ArrayList<Vehicle>> dailyReportBranch(String specifiedBranch, String date) {
+    public HashMap<String, ArrayList<Vehicle>> dailyReportBranchRtn(String specifiedBranch, DATE date) {
+        ArrayList<Vehicle> truck = new ArrayList<>();
+        ArrayList<Vehicle> suv = new ArrayList<>();
+        ArrayList<Vehicle> fullsize = new ArrayList<>();
+        ArrayList<Vehicle> economy = new ArrayList<>();
+        ArrayList<Vehicle> compact = new ArrayList<>();
+        ArrayList<Vehicle> midsize = new ArrayList<>();
+        ArrayList<Vehicle> standard = new ArrayList<>();
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT * FROM vehicles v, return r WHERE v.vlicense = r.vlicense AND " +
+                    "r.dateR = " + date + " AND v.location = " + specifiedBranch);
+
+            while(rs.next()) {
+                Vehicle vehicle = new Vehicle(
+                        rs.getInt("v.vid"),
+                        rs.getString("v.vlicense"),
+                        rs.getString("v.odometer"),
+                        rs.getString("v.status"),
+                        rs.getString("v.vtname"),
+                        rs.getString("v.location"));
+                if (rs.getString("v.vtname").equals("Truck")) {
+                    truck.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Suv")) {
+                    suv.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Full-size")) {
+                    fullsize.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Economy")) {
+                    economy.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Compact")) {
+                    compact.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Mid-size")) {
+                    midsize.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Standard")) {
+                    standard.add(vehicle);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        HashMap<String, ArrayList<Vehicle>> branchRentedVehicles = new HashMap<>();
+        branchRentedVehicles.put("Truck", truck);
+        branchRentedVehicles.put("Suv", suv);
+        branchRentedVehicles.put("Full-size", fullsize);
+        branchRentedVehicles.put("Economy", economy);
+        branchRentedVehicles.put("Compact", compact);
+        branchRentedVehicles.put("Mid-size", midsize);
+        branchRentedVehicles.put("Standard", standard);
+        return branchRentedVehicles;
+    }
+
+    public HashMap<String, Integer> dailyReportBranchNumRtn(String specifiedBranch, DATE date) {
+        Integer truck = 0;
+        Integer suv = 0;
+        Integer fullsize = 0;
+        Integer economy = 0;
+        Integer compact = 0;
+        Integer midsize = 0;
+        Integer standard = 0;
+
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT v.vtname, count(v.vtname) AS vcount FROM vehicles v, return r WHERE v.vlicense = r.vlicense AND " +
+                    "r.dateR = " + date + " AND v.location = " + specifiedBranch + " GROUP BY v.vtname");
+
+            while(rs.next()) {
+                if (rs.getString("v.vtname").equals("Truck")) {
+                    truck = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Suv")) {
+                    suv = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Full-size")) {
+                    fullsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Economy")) {
+                    economy = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Compact")) {
+                    compact = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Mid-size")) {
+                    midsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Standard")) {
+                    standard = rs.getInt("vcount");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        HashMap<String, Integer> vhMap = new HashMap<>();
+        vhMap.put("Truck", truck);
+        vhMap.put("Suv", suv);
+        vhMap.put("Full-size", fullsize);
+        vhMap.put("Economy", economy);
+        vhMap.put("Compact", compact);
+        vhMap.put("Mid-size", midsize);
+        vhMap.put("Standard", standard);
+
+        return vhMap;
+    }
+
+    public Integer dailyReportBranchTotalRtn(String specifiedBranch, DATE date) {
+        Integer count = 0;
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT count(v.vlicense) AS count FROM vehicles v, return r WHERE v.vlicense = r.vlicense AND " +
+                    "r.dateR = " + date + " AND v.location = " + specifiedBranch);
+
+            while(rs.next()) {
+                rs.getString("count");
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return count;
+    }
+
+    public HashMap<String, Integer> dailyReportBranchRevByCat(String specifiedBranch, DATE date) {
+        Integer truck = 0;
+        Integer suv = 0;
+        Integer fullsize = 0;
+        Integer economy = 0;
+        Integer compact = 0;
+        Integer midsize = 0;
+        Integer standard = 0;
+
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT v.vtname, SUM(r.valueR) AS vcount FROM vehicles v, return r WHERE v.vlicense = r.vlicense AND " +
+                    "r.dateR = " + date + " AND v.location = " + specifiedBranch + " GROUP BY v.vtname");
+
+            while(rs.next()) {
+                if (rs.getString("v.vtname").equals("Truck")) {
+                    truck = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Suv")) {
+                    suv = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Full-size")) {
+                    fullsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Economy")) {
+                    economy = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Compact")) {
+                    compact = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Mid-size")) {
+                    midsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Standard")) {
+                    standard = rs.getInt("vcount");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        HashMap<String, Integer> vhMap = new HashMap<>();
+        vhMap.put("Truck", truck);
+        vhMap.put("Suv", suv);
+        vhMap.put("Full-size", fullsize);
+        vhMap.put("Economy", economy);
+        vhMap.put("Compact", compact);
+        vhMap.put("Mid-size", midsize);
+        vhMap.put("Standard", standard);
+
+        return vhMap;
+    }
+
+    public Integer dailyReportBranchTotalRev(String specifiedBranch, DATE date) {
+        Integer count = 0;
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT SUM(r.valueR) AS count FROM vehicles v, return r WHERE v.vlicense = r.vlicense AND " +
+                    "r.dateR = " + date + " AND v.location = " + specifiedBranch);
+
+            while(rs.next()) {
+                rs.getString("count");
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return count;
+    }
+
+	public HashMap<String, ArrayList<Vehicle>> dailyReportBranch(String specifiedBranch, DATE date) {
         ArrayList<Vehicle> truck = new ArrayList<>();
         ArrayList<Vehicle> suv = new ArrayList<>();
         ArrayList<Vehicle> fullsize = new ArrayList<>();
@@ -87,6 +271,71 @@ public class DatabaseConnectionHandler {
         branchRentedVehicles.put("Mid-size", midsize);
         branchRentedVehicles.put("Standard", standard);
         return branchRentedVehicles;
+    }
+
+    public HashMap<String, Integer> dailyReportBranchNum(String specifiedBranch, DATE date) {
+	    Integer truck = 0;
+	    Integer suv = 0;
+	    Integer fullsize = 0;
+	    Integer economy = 0;
+	    Integer compact = 0;
+	    Integer midsize = 0;
+	    Integer standard = 0;
+
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT v.vtname, count(v.vtname) AS vcount FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND " +
+                    "r.fromDate = " + date + " AND v.location = " + specifiedBranch + " GROUP BY v.vtname");
+
+            while(rs.next()) {
+                if (rs.getString("v.vtname").equals("Truck")) {
+                    truck = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Suv")) {
+                    suv = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Full-size")) {
+                    fullsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Economy")) {
+                    economy = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Compact")) {
+                    compact = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Mid-size")) {
+                    midsize = rs.getInt("vcount");
+                } else if (rs.getString("v.vtname").equals("Standard")) {
+                    standard = rs.getInt("vcount");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        HashMap<String, Integer> vhMap = new HashMap<>();
+        vhMap.put("Truck", truck);
+        vhMap.put("Suv", suv);
+        vhMap.put("Full-size", fullsize);
+        vhMap.put("Economy", economy);
+        vhMap.put("Compact", compact);
+        vhMap.put("Mid-size", midsize);
+        vhMap.put("Standard", standard);
+
+        return vhMap;
+    }
+
+    public Integer dailyReportBranchTotal(String specifiedBranch, DATE date) {
+	    Integer count = 0;
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT count(v.vlicense) AS count FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND " +
+                    "r.fromDate = " + date + " AND v.location = " + specifiedBranch);
+
+            while(rs.next()) {
+                rs.getString("count");
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return count;
     }
 
 	public ArrayList<Vehicle> viewVehicle(String vtname, String location, String time) {
