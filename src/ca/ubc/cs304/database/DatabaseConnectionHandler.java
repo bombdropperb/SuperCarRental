@@ -1,17 +1,9 @@
 package ca.ubc.cs304.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.Customer;
-import ca.ubc.cs304.model.Reservation;
-import ca.ubc.cs304.model.Vehicle;
+import ca.ubc.cs304.model.*;
 
 /**
  * This class handles all database related transactions
@@ -44,26 +36,25 @@ public class DatabaseConnectionHandler {
 	}
 
 	public ArrayList<Vehicle> viewVehicle(String vtname, String location, String time) {
-		// TODO
-		System.out.println("in view");
+		// TODo
 		ArrayList<Vehicle> result = new ArrayList<>();
-		String sql = "";
-		/*if (vtname == null && time == null && location == null) {
-			sql = "SELECT * FROM vehicles";
-		}else if (vtname != null && location == null && time == null )  {
-			sql = "SELECT * FROM vehicles WHERE vtname = ? ";
-		}else if (vtname != null && location == null && time == null)  {
-			sql = "SELECT * FROM vehicles WHERE vehicles_vtname = ? AND vehicles_location = ?";
-		}*/
-		System.out.println("About to try sql");
-		try {
-			/*PreparedStatement ps = connection.prepareStatement("SELECT * FROM vehicles");
-			// ps.setString(1, vtname);
-			// ps.setString(2,location);
-			ResultSet rs = ps.executeQuery();*/
+		String sql = "SELECT * FROM vehicles WHERE status = 'Available' ";;
 
-			Statement ps = connection.createStatement();
-			ResultSet rs = ps.executeQuery("SELECT * FROM vehicles");
+		if (!vtname.isEmpty()) {
+			sql = sql + "AND vtname = " + "'" + vtname + "'";
+		}
+		if (!location.isEmpty() )  {
+			sql = sql+ "AND location = " + "'" +location + "'";
+		}
+		if (!time.isEmpty())  {
+			sql = sql + "AND time = " + "'" + time + "'";
+		}
+		System.out.println(sql);
+
+		try {
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
 
 			while(rs.next()) {
 				Vehicle vehicle = new Vehicle(rs.getInt("vid"),
@@ -88,7 +79,7 @@ public class DatabaseConnectionHandler {
 	}
 
 	public Boolean existingCustomer(int dLicense) {
-		// TODO
+
 		try {
 			System.out.println("in existing customers");
 			PreparedStatement ps = connection.prepareStatement(" SELECT * FROM customer WHERE dLicense = ?");
@@ -113,7 +104,7 @@ public class DatabaseConnectionHandler {
 	try{
 		System.out.println("in insert customers");
 		PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
-		// TODO
+
 		ps.setInt(1, customer.getPhoneNumber());
 		ps.setString(2, customer.getName());
 		ps.setString(3, customer.getAddress());
@@ -136,15 +127,15 @@ public class DatabaseConnectionHandler {
 	public void reserveVehicle (Reservation res) {
 		try {
 			// TODO
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,to_date(?,'YYYY/MM/DD'),?,?,?)");
 			// check ordering
 			ps.setInt(1, res.getConfNo());
 			ps.setString(2, res.getVtname());
 			ps.setInt(3, res.getdLicense());
 			ps.setString(4, res.getFromDate());
-			ps.setString(5, res.getFromTime());
+			ps.setInt(5, res.getFromTime());
 			ps.setString(6, res.getToDate());
-			ps.setString(7, res.getToTime());
+			ps.setInt(7, res.getToTime());
 
 			ps.executeUpdate();
 
@@ -155,6 +146,70 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			rollbackConnection();
 		}
+
+	}
+
+	public Boolean validVlicense(String id) {
+		String sql = "SELECT * FROM vehicles WHERE status = 'Available' AND vlicense = " + "'"+ id + "'";
+		try {
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
+
+			if(rs.next()) {
+				System.out.println("available vehicle");
+				return true;
+			}
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+
+		return false;
+
+	}
+
+
+
+	public void rentVehicle(Rental rental) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO rentals VALUES (?,?,?,?,?,?,?,?,?)");
+			ps.setInt(1, rental.getRid());
+			ps.setString(2, rental.getvLicense());
+			ps.setInt(3, rental.getdLicense());
+			ps.setString(4, rental.getFromDate());
+			ps.setInt(5, rental.getFromTime());
+			ps.setString(6, rental.getToDate());
+			ps.setInt(7, rental.getToTime());
+			ps.setInt(8, rental.getOdometer());
+			//TODO set to null
+			if(rental.getConfNo() == 0) {
+				ps.setNull(9, Types.INTEGER);
+			}else {
+				ps.setNull(9, rental.getConfNo());
+			}
+
+			PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicles SET status = 'Rented' WHERE vlicense = ?");
+			ps2.setString(1,rental.getvLicense());
+
+			ps.executeUpdate();
+			ps2.executeUpdate();
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+
+
+	}
+
+	public void returnVehicle() {
 
 	}
 

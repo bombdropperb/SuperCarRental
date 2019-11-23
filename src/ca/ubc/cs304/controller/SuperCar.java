@@ -3,10 +3,7 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.Customer;
-import ca.ubc.cs304.model.Reservation;
-import ca.ubc.cs304.model.Vehicle;
+import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
@@ -83,7 +80,7 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
     }
 
 	@Override
-	public Boolean existingCustomer(int dLicense) {
+		public Boolean existingCustomer(int dLicense) {
 		return dbHandler.existingCustomer(dLicense);
 	}
 
@@ -100,6 +97,16 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
 	@Override
 	public ArrayList<Vehicle> viewVehicle(String vtname, String time, String location) {
 		return dbHandler.viewVehicle(vtname, time, location);
+	}
+
+	@Override
+	public void rentVehicle(Rental rent) {
+		dbHandler.rentVehicle(rent);
+	}
+
+	@Override
+	public Boolean validVlicense(String id) {
+		return dbHandler.validVlicense(id);
 	}
 
 	/**

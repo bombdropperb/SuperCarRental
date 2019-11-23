@@ -7,10 +7,7 @@ import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.Customer;
-import ca.ubc.cs304.model.Reservation;
-import ca.ubc.cs304.model.Vehicle;
+import ca.ubc.cs304.model.*;
 
 /**
  * The class is only responsible for handling terminal text inputs. 
@@ -40,9 +37,9 @@ public class TerminalTransactions {
 			System.out.println();
 			System.out.println("1. View Vehicle");
 			System.out.println("2. Reserve Vehicle");
-			System.out.println("3. Update branch name");
-			System.out.println("4. Show branch");
-			System.out.println("5. Quit");
+			System.out.println("3. Rent a vehicle");
+			System.out.println("4. Create new customer");
+			System.out.println("5. Return a vehicle");
 			System.out.println("6. Quit");
 			System.out.println("7. Insert Customer");
 			System.out.print("Please choose one of the above 5 options: ");
@@ -60,19 +57,16 @@ public class TerminalTransactions {
 						handleReservation();
 						break;
 					case 3:
-						handleDeleteOption();
+						handleRental();
 						break;
 					case 4:
-						handleUpdateOption();
+						handleInsertCustomer();
 						break;
 					case 5:
-						delegate.showBranch();
+						handleReturn();
 						break;
 					case 6:
 						handleQuitOption();
-						break;
-					case 7:
-						handleInsertCustomer();
 						break;
 					default:
 						System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
@@ -129,7 +123,6 @@ public class TerminalTransactions {
 	private void handleReservation() {
 		int dLicense = 0;
 
-
 		System.out.print("Please enter your license: ");
 		dLicense = readInteger(false);
 
@@ -139,15 +132,15 @@ public class TerminalTransactions {
 			return;
 		}
 
-
 		String vtname = null;
 		String fromDate = null;
-		String fromTime = null;
+		int fromTime;
 		String toDate = null;
-		String toTime = null;
+		int toTime;
 		int confNo = INVALID_INPUT;
+
 		while (confNo == INVALID_INPUT) {
-			System.out.print("Enter the details to the reservation ");
+			System.out.print("Enter the details to the confNo of the reservation: ");
 			confNo = readInteger(false);
 		}
 		while (vtname == null || vtname.length() <= 0) {
@@ -160,21 +153,84 @@ public class TerminalTransactions {
 			fromDate = readLine().trim();
 		}
 
-		while (fromTime == null || fromTime.length() <= 0) {
-			System.out.print("Please enter your fromTime: ");
-			fromTime = readLine().trim();
-		}
+		System.out.print("Please enter your fromTime: ");
+		fromTime = readInteger(false);
 
 		while (toDate == null || toDate.length() <= 0) {
 			System.out.print("Please enter your toDate: ");
 			toDate = readLine().trim();
 		}
-		while (toTime == null || toTime.length() <= 0) {
-			System.out.print("Please enter your toTime: ");
-			toTime = readLine().trim();
-		}
+
+		System.out.print("Please enter your toTime: ");
+		toTime = readInteger(false);
+
 		Reservation reservation = new Reservation(confNo, vtname, dLicense, fromDate,fromTime, toDate,toTime);
 		delegate.reserveVehicle(reservation);
+
+	}
+
+	private void handleRental() {
+		int rid;
+		String vLicense = null;
+		int dLicense;
+		String fromDate = null;
+		int fromTime;
+		String toDate = null;
+		int toTime;
+		int odometer;
+		int confNo = INVALID_INPUT;
+
+		System.out.print("Please enter your rid: ");
+		rid = readInteger(false);
+
+		while (vLicense == null || vLicense.length() <= 0) {
+			System.out.print("Please enter the vehicle license: ");
+			vLicense = readLine().trim();
+		}
+
+		if (!delegate.validVlicense(vLicense)) {
+			System.out.println("Vehicle unavailable");
+			return;
+		}
+
+		System.out.print("Please enter your dLicense: ");
+		dLicense = readInteger(false);
+
+		if (!delegate.existingCustomer(dLicense)){
+			System.out.println("Customer does not exist");
+			return;
+		}
+
+		while (fromDate == null || fromDate.length() <= 0) {
+			System.out.print("Please enter your fromDate: ");
+			fromDate = readLine().trim();
+		}
+
+		System.out.print("Please enter your fromTime: ");
+		fromTime = readInteger(false);
+
+		while (toDate == null || toDate.length() <= 0) {
+			System.out.print("Please enter your toDate: ");
+			toDate = readLine().trim();
+		}
+
+		System.out.print("Please enter your toTime: ");
+		toTime = readInteger(false);
+
+		System.out.print("Please enter your odometer: ");
+		odometer = readInteger(false);
+
+		while (confNo == INVALID_INPUT) {
+			System.out.print("Enter the details to the confNo of the reservation: ");
+			confNo = readInteger(false);
+		}
+
+		Rental rent = new Rental(rid,vLicense,dLicense,fromDate,fromTime,toDate,toTime,odometer,confNo);
+		delegate.rentVehicle(rent);
+
+	}
+
+	private void handleReturn() {
 
 	}
 
