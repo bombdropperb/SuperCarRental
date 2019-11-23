@@ -2,6 +2,7 @@ package ca.ubc.cs304.database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ca.ubc.cs304.model.*;
 
@@ -34,6 +35,59 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
+
+	public HashMap<String, ArrayList<Vehicle>> dailyReportBranch(String specifiedBranch, String date) {
+        ArrayList<Vehicle> truck = new ArrayList<>();
+        ArrayList<Vehicle> suv = new ArrayList<>();
+        ArrayList<Vehicle> fullsize = new ArrayList<>();
+        ArrayList<Vehicle> economy = new ArrayList<>();
+        ArrayList<Vehicle> compact = new ArrayList<>();
+        ArrayList<Vehicle> midsize = new ArrayList<>();
+        ArrayList<Vehicle> standard = new ArrayList<>();
+        try {
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery("SELECT * FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND " +
+                    "r.fromDate = " + date + " AND v.location = " + specifiedBranch);
+
+            while(rs.next()) {
+                Vehicle vehicle = new Vehicle(
+                        rs.getInt("v.vid"),
+                        rs.getString("v.vlicense"),
+                        rs.getString("v.odometer"),
+                        rs.getString("v.status"),
+                        rs.getString("v.vtname"),
+                        rs.getString("v.location"));
+                if (rs.getString("v.vtname").equals("Truck")) {
+                    truck.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Suv")) {
+                    suv.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Full-size")) {
+                    fullsize.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Economy")) {
+                    economy.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Compact")) {
+                    compact.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Mid-size")) {
+                    midsize.add(vehicle);
+                } else if (rs.getString("v.vtname").equals("Standard")) {
+                    standard.add(vehicle);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        HashMap<String, ArrayList<Vehicle>> branchRentedVehicles = new HashMap<>();
+        branchRentedVehicles.put("Truck", truck);
+        branchRentedVehicles.put("Suv", suv);
+        branchRentedVehicles.put("Full-size", fullsize);
+        branchRentedVehicles.put("Economy", economy);
+        branchRentedVehicles.put("Compact", compact);
+        branchRentedVehicles.put("Mid-size", midsize);
+        branchRentedVehicles.put("Standard", standard);
+        return branchRentedVehicles;
+    }
 
 	public ArrayList<Vehicle> viewVehicle(String vtname, String location, String time) {
 		// TODo
