@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Date;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.*;
@@ -40,8 +41,8 @@ public class TerminalTransactions {
 			System.out.println("3. Rent a vehicle");
 			System.out.println("4. Create new customer");
 			System.out.println("5. Return a vehicle");
-			System.out.println("6. Quit");
-			System.out.println("7. Insert Customer");
+			System.out.println("7. View all table");
+			System.out.println("10. Quit");
 			System.out.print("Please choose one of the above 5 options: ");
 
 			choice = readInteger(false);
@@ -65,8 +66,11 @@ public class TerminalTransactions {
 					case 5:
 						handleReturn();
 						break;
-					case 6:
+					case 10:
 						handleQuitOption();
+						break;
+					case 7:
+						viewTable();
 						break;
 					default:
 						System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
@@ -75,10 +79,11 @@ public class TerminalTransactions {
 			}
 		}		
 	}
+
 	private void handleView() {
 		String vtname = null;
 		String location = null;
-		String time = null;
+		Date time = null;
 
 		System.out.println("Enter type");
 		vtname = readLine().trim();
@@ -86,8 +91,21 @@ public class TerminalTransactions {
 		System.out.println("Enter location");
 		location = readLine().trim();
 
-		System.out.println("Enter time");
-		time = readLine().trim();
+		System.out.println("Do you wish to Enter time that you need the car");
+		String s = readLine().trim();
+		if(s == "yes"){
+
+			System.out.println("Year: ");
+			int year = readInteger(false);
+
+			System.out.println("Month: ");
+			int month = readInteger(false);
+
+			System.out.println("Date: ");
+			int date = readInteger(false);
+
+			time = new Date(year, month, date);
+		}
 
 		ArrayList<Vehicle> arr = delegate.viewVehicle(vtname, location, time);
 		for (Vehicle v: arr) {
@@ -148,6 +166,11 @@ public class TerminalTransactions {
 			vtname = readLine().trim();
 		}
 
+		if(!delegate.existVehicleType(vtname)) {
+			System.out.println("vehicle of this type is not available");
+			return;
+		}
+
 		while (fromDate == null || fromDate.length() <= 0) {
 			System.out.print("Please enter your fromDate: ");
 			fromDate = readLine().trim();
@@ -165,7 +188,10 @@ public class TerminalTransactions {
 		toTime = readInteger(false);
 
 		Reservation reservation = new Reservation(confNo, vtname, dLicense, fromDate,fromTime, toDate,toTime);
-		delegate.reserveVehicle(reservation);
+		Boolean success  = delegate.reserveVehicle(reservation);
+		if (success) {
+			System.out.println("this is the confno: "+ reservation.getConfNo() + " use this to print out the needed info");
+		}
 
 	}
 
@@ -189,7 +215,7 @@ public class TerminalTransactions {
 		}
 
 		if (!delegate.validVlicense(vLicense)) {
-			System.out.println("Vehicle unavailable");
+			System.out.println("Vehicle unavailable!");
 			return;
 		}
 
@@ -221,68 +247,52 @@ public class TerminalTransactions {
 		odometer = readInteger(false);
 
 		while (confNo == INVALID_INPUT) {
-			System.out.print("Enter the details to the confNo of the reservation: ");
+			System.out.print("Enter the details to the confNo of the reservation, if none enter 0: ");
 			confNo = readInteger(false);
 		}
 
 		Rental rent = new Rental(rid,vLicense,dLicense,fromDate,fromTime,toDate,toTime,odometer,confNo);
-		delegate.rentVehicle(rent);
+		Boolean success = delegate.rentVehicle(rent);
 
+		if (success) {
+			System.out.println("output the details needed here -> : "+ rent.getConfNo());
+		}
 	}
 
 	private void handleReturn() {
+		int rid;
+		String date;
+		int time;
+		int odometer;
+		String fullTank;
+		int value;
+
+		System.out.println("Enter the rid: ");
+		rid = readInteger(false);
+
+		System.out.print("Enter the date: ");
+		date = readLine().trim();
+
+		System.out.print("Enter the details to time: ");
+		time = readInteger(false);
+
+		System.out.print("Enter the details to odometer: ");
+		odometer = readInteger(false);
+
+		System.out.print("Enter the detail to fulltank: ");
+		fullTank = readLine().trim();
+
+		System.out.print("Enter the details to value: ");
+		value = readInteger(false);
+
+		Return r = new Return(rid, date, time, odometer, fullTank, value);
+
+		delegate.returnVehicle(r);
 
 	}
 
-	private void handleDeleteOption() {
-		int branchId = INVALID_INPUT;
-		while (branchId == INVALID_INPUT) {
-			System.out.print("Please enter the branch ID you wish to delete: ");
-			branchId = readInteger(false);
-			if (branchId != INVALID_INPUT) {
-				delegate.deleteBranch(branchId);
-			}
-		}
-	}
-	
-	private void handleInsertOption() {
-		int id = INVALID_INPUT;
-		while (id == INVALID_INPUT) {
-			System.out.print("Please enter the branch ID you wish to insert: ");
-			id = readInteger(false);
-		}
-		
-		String name = null;
-		while (name == null || name.length() <= 0) {
-			System.out.print("Please enter the branch name you wish to insert: ");
-			name = readLine().trim();
-		}
-		
-		// branch address is allowed to be null so we don't need to repeatedly ask for the address
-		System.out.print("Please enter the branch address you wish to insert: ");
-		String address = readLine().trim();
-		if (address.length() == 0) {
-			address = null;
-		}
-		
-		String city = null;
-		while (city == null || city.length() <= 0) {
-			System.out.print("Please enter the branch city you wish to insert: ");
-			city = readLine().trim();
-		}
-		
-		int phoneNumber = INVALID_INPUT;
-		while (phoneNumber == INVALID_INPUT) {
-			System.out.print("Please enter the branch phone number you wish to insert: ");
-			phoneNumber = readInteger(true);
-		}
-		
-		BranchModel model = new BranchModel(address,
-											city,
-											id,
-											name,
-											phoneNumber);
-		delegate.insertBranch(model);
+	private void viewTable() {
+		delegate.viewAll();
 	}
 	
 	private void handleQuitOption() {
@@ -298,22 +308,7 @@ public class TerminalTransactions {
 		
 		delegate.terminalTransactionsFinished();
 	}
-	
-	private void handleUpdateOption() {
-		int id = INVALID_INPUT;
-		while (id == INVALID_INPUT) {
-			System.out.print("Please enter the branch ID you wish to update: ");
-			id = readInteger(false);
-		}
-		
-		String name = null;
-		while (name == null || name.length() <= 0) {
-			System.out.print("Please enter the branch name you wish to update: ");
-			name = readLine().trim();
-		}
 
-		delegate.updateBranch(id, name);
-	}
 	
 	private int readInteger(boolean allowEmpty) {
 		String line = null;

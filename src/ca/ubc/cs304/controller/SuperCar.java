@@ -9,6 +9,7 @@ import ca.ubc.cs304.ui.TerminalTransactions;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This is the main controller class that will orchestrate everything.
@@ -90,24 +91,40 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
 	}
 
 	@Override
-	public void reserveVehicle(Reservation reserve) {
-		dbHandler.reserveVehicle(reserve);
+	public Boolean reserveVehicle(Reservation reserve) {
+		return dbHandler.reserveVehicle(reserve);
 	}
 
 	@Override
-	public ArrayList<Vehicle> viewVehicle(String vtname, String time, String location) {
-		return dbHandler.viewVehicle(vtname, time, location);
+	public ArrayList<Vehicle> viewVehicle(String vtname, String location, Date time) {
+		return dbHandler.viewVehicle(vtname, location, time);
 	}
 
 	@Override
-	public void rentVehicle(Rental rent) {
-		dbHandler.rentVehicle(rent);
+	public Boolean rentVehicle(Rental rent) {
+		return dbHandler.rentVehicle(rent);
 	}
 
 	@Override
 	public Boolean validVlicense(String id) {
 		return dbHandler.validVlicense(id);
 	}
+
+	@Override
+	public void returnVehicle(Return r) {
+		dbHandler.returnVehicle(r);
+	}
+
+	@Override
+	public void viewAll() {
+		dbHandler.viewAll();
+	}
+
+	@Override
+	public Boolean existVehicleType(String vtname) {
+		return dbHandler.existVehicleType(vtname);
+	}
+
 
 	/**
 	 * TermainalTransactionsDelegate Implementation

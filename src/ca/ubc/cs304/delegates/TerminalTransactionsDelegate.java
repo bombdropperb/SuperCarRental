@@ -3,6 +3,7 @@ package ca.ubc.cs304.delegates;
 import ca.ubc.cs304.model.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This interface uses the delegation design pattern where instead of having
@@ -20,10 +21,12 @@ public interface TerminalTransactionsDelegate {
 	public void updateBranch(int branchId, String name);
 	public Boolean existingCustomer(int dLicense);
 	public void insertCustomer(Customer customer);
-	public void reserveVehicle(Reservation reserve);
-	public ArrayList<Vehicle> viewVehicle(String vtname, String time, String location);
-	public void rentVehicle(Rental rent);
+	public Boolean reserveVehicle(Reservation reserve);
+	public ArrayList<Vehicle> viewVehicle(String vtname, String location, Date time);
+	public Boolean rentVehicle(Rental rent);
 	public Boolean validVlicense(String id);
-	
+	public void returnVehicle(Return r);
+	public void viewAll();
+	public Boolean existVehicleType(String vtname);
 	public void terminalTransactionsFinished();
 }

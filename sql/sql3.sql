@@ -40,3 +40,6 @@ insert into vehicles values (26, 'SCR 126', 761000, 'Available', 'Suv', 'Richmon
 
 insert into reservation values (1, 'Truck', 4, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 1500);
 insert into reservation values (2, 'Economy', 2, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 2400);
+
+insert into rentals values (10, 'SCR 109', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, null);
+insert into rentals values (20, 'SCR 110', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, 1);

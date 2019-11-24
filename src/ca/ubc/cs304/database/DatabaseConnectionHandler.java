@@ -2,9 +2,13 @@ package ca.ubc.cs304.database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import ca.ubc.cs304.model.*;
+
+import javax.sound.midi.Soundbank;
+import javax.xml.transform.Result;
 
 /**
  * This class handles all database related transactions
@@ -89,7 +93,7 @@ public class DatabaseConnectionHandler {
         return branchRentedVehicles;
     }
 
-	public ArrayList<Vehicle> viewVehicle(String vtname, String location, String time) {
+	public ArrayList<Vehicle> viewVehicle(String vtname, String location, Date time) {
 		// TODo
 		ArrayList<Vehicle> result = new ArrayList<>();
 		String sql = "SELECT * FROM vehicles WHERE status = 'Available' ";;
@@ -100,8 +104,8 @@ public class DatabaseConnectionHandler {
 		if (!location.isEmpty() )  {
 			sql = sql+ "AND location = " + "'" +location + "'";
 		}
-		if (!time.isEmpty())  {
-			sql = sql + "AND time = " + "'" + time + "'";
+		if (!(time == null))  {
+			sql = sql;
 		}
 		System.out.println(sql);
 
@@ -135,7 +139,6 @@ public class DatabaseConnectionHandler {
 	public Boolean existingCustomer(int dLicense) {
 
 		try {
-			System.out.println("in existing customers");
 			PreparedStatement ps = connection.prepareStatement(" SELECT * FROM customer WHERE dLicense = ?");
 			ps.setInt(1, dLicense);
 			ResultSet res = ps.executeQuery();
@@ -178,7 +181,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void reserveVehicle (Reservation res) {
+	public Boolean reserveVehicle (Reservation res) {
 		try {
 			// TODO
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,to_date(?,'YYYY/MM/DD'),?,?,?)");
@@ -191,8 +194,11 @@ public class DatabaseConnectionHandler {
 			ps.setString(6, res.getToDate());
 			ps.setInt(7, res.getToTime());
 
-			ps.executeUpdate();
+			int row = ps.executeUpdate();
 
+			if(row!= 0 ) {
+				return true;
+			}
 			connection.commit();
 
 			ps.close();
@@ -201,6 +207,28 @@ public class DatabaseConnectionHandler {
 			rollbackConnection();
 		}
 
+		return false;
+	}
+
+	public Boolean existVehicleType(String vtname) {
+
+		try {
+			String sql  = "SELECT * FROM vehicles WHERE vtname = '" + vtname + "'";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			// check ordering
+			ResultSet rs =  ps.executeQuery();
+
+			if( rs.next() ) {
+				return true;
+			}
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+		return false;
 	}
 
 	public Boolean validVlicense(String id) {
@@ -228,7 +256,7 @@ public class DatabaseConnectionHandler {
 
 
 
-	public void rentVehicle(Rental rental) {
+	public Boolean rentVehicle(Rental rental) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO rentals VALUES (?,?,?,?,?,?,?,?,?)");
 			ps.setInt(1, rental.getRid());
@@ -239,31 +267,128 @@ public class DatabaseConnectionHandler {
 			ps.setString(6, rental.getToDate());
 			ps.setInt(7, rental.getToTime());
 			ps.setInt(8, rental.getOdometer());
-			//TODO set to null
 			if(rental.getConfNo() == 0) {
 				ps.setNull(9, Types.INTEGER);
 			}else {
-				ps.setNull(9, rental.getConfNo());
+				ps.setInt(9, rental.getConfNo());
 			}
 
-			PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicles SET status = 'Rented' WHERE vlicense = ?");
-			ps2.setString(1,rental.getvLicense());
 
-			ps.executeUpdate();
-			ps2.executeUpdate();
+			int row = ps.executeUpdate();
+
+			if (row != 0) {
+				updateStatus(rental.getvLicense());
+				return true;
+			}
 
 			connection.commit();
 
 			ps.close();
+
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			rollbackConnection();
 		}
-
-
+		return false;
 	}
 
-	public void returnVehicle() {
+	public void updateStatus(String vlicense) {
+
+		try {
+			String sql = "UPDATE vehicles SET status = 'Rented' WHERE vlicense =" + "'" + vlicense + "'";
+
+			PreparedStatement ps2 = connection.prepareStatement(sql);
+
+			int row = ps2.executeUpdate();
+
+			if (row == 0) {
+				System.out.println("Status updated failed");
+			}
+
+			connection.commit();
+
+			ps2.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void returnVehicle(Return r) {
+
+		try {
+			if(!existRental(r.getRid())) {
+				return;
+			}
+
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?,?)");
+			ps.setInt(1, r.getRid());
+			ps.setString(2, r.getDate());
+			ps.setInt(3, r.getTime());
+			ps.setInt(4, r.getOdometer());
+			ps.setString(5, r.getFullTank());
+			ps.setInt(6, r.getValue());
+
+			ps.executeUpdate();
+
+			connection.commit();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public Boolean existRental(int id){
+		try {
+			String sql = "SELECT * FROM rentals WHERE rid = " + "'" +id + "'";
+			System.out.println(sql);
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet set = ps.executeQuery();
+
+			if (set.next()) {
+				System.out.println("Rental exists");
+				return true;
+			}
+
+			connection.commit();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+		return false;
+
+	}
+	public void viewAll(){
+
+		try {
+			String sql = "SELECT table_name from user_tables" ;
+
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet result = ps.executeQuery();
+
+			while (result.next()) {
+				System.out.println(result.getString("table_name"));
+			}
+
+
+
+			connection.commit();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
 
 	}
 
@@ -315,7 +440,7 @@ public class DatabaseConnectionHandler {
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
-		
+
 //    		// get info on ResultSet
 //    		ResultSetMetaData rsmd = rs.getMetaData();
 //

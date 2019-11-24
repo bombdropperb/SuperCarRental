@@ -33,7 +33,7 @@ create table customer (
 );
 
 create table reservation (
-	confNo integer not null PRIMARY KEY,
+	confNo char(20) not null PRIMARY KEY,
 	vtname char(20) not null references vehicleType,
 	dlicense char(20)not null references customer,
 	fromDate DATE not null,
@@ -51,7 +51,7 @@ create table rentals (
 	toDate DATE not null,
 	toTime integer CHECK (toTime >= 0 AND toTime <= 2400),
 	odometer integer not null,
-	confNo integer references reservation
+	confNo char(20) references reservation
 );
 
 create table return (
