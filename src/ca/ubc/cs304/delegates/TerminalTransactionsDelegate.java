@@ -4,6 +4,7 @@ import ca.ubc.cs304.model.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This interface uses the delegation design pattern where instead of having
@@ -15,10 +16,6 @@ import java.util.Date;
  * Bank is the actual class that will implement the methods.
  */
 public interface TerminalTransactionsDelegate {
-	public void deleteBranch(int branchId);
-	public void insertBranch(BranchModel model);
-	public void showBranch();
-	public void updateBranch(int branchId, String name);
 	public Boolean existingCustomer(int dLicense);
 	public void insertCustomer(Customer customer);
 	public Boolean reserveVehicle(Reservation reserve);
@@ -29,4 +26,6 @@ public interface TerminalTransactionsDelegate {
 	public void viewAll();
 	public Boolean existVehicleType(String vtname);
 	public void terminalTransactionsFinished();
+	public ArrayList<Vehicle> dailyRental(String d, String location);
+	public ArrayList<Vehicle> dailyReturn(String d, String location);
 }

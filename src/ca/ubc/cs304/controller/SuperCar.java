@@ -10,6 +10,7 @@ import ca.ubc.cs304.ui.TerminalTransactions;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This is the main controller class that will orchestrate everything.
@@ -168,7 +169,18 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
     	
     	System.exit(0);
     }
-    
+
+	@Override
+	public ArrayList<Vehicle> dailyRental(String d, String location) {
+		return dbHandler.dailyRentalBranch( d, location);
+	}
+
+	@Override
+	public ArrayList<Vehicle> dailyReturn(String  d, String location) {
+    	return dbHandler.dailyReturnBranch(d, location);
+
+	}
+
 	/**
 	 * Main method called at launch time
 	 */

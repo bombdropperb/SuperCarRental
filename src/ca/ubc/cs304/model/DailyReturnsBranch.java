@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class DailyReturnsBranch {
 
     // For each HashMap, String is the vehicleType and the name describes the values
-    private final HashMap<String, ArrayList<Vehicle>> vehicles;
+   /* private final HashMap<String, ArrayList<Vehicle>> vehicles;
     private final HashMap<String, Integer> numVehicles;
     private final HashMap<String, Integer> revByCat;
     private final int newReturns;
@@ -42,5 +42,5 @@ public class DailyReturnsBranch {
 
     public int getTotRev() {
         return totRev;
-    }
+    }*/
 }

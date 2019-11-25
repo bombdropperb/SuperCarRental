@@ -11,12 +11,12 @@ public class DailyRentalsBranch {
 
     // HashMap with key being vehicle type and ArrayList containing the list of vehicles of that type which should
     // meet the criteria of being located at the specified branch and rented on the specified date
-    private final HashMap<String, ArrayList<Vehicle>> vehicles;
-    private final HashMap<String, Integer> numVehicles;
-    private final int newRentals;
+    //private final HashMap<String, ArrayList<Vehicle>> vehicles;
+    //private final HashMap<String, Integer> numVehicles;
+   // private final int newRentals;
 
     public DailyRentalsBranch(String branch, DATE date) {
-        DatabaseConnectionHandler dbHandler = new DatabaseConnectionHandler();
+     /*   DatabaseConnectionHandler dbHandler = new DatabaseConnectionHandler();
 
         // Calls the DB to get the HashMap for vehicles.
         vehicles = dbHandler.dailyReportBranch(branch, date);
@@ -53,5 +53,6 @@ public class DailyRentalsBranch {
 
     public int getNewRentals() {
         return newRentals;
-    }
+    }*/
+}
 }

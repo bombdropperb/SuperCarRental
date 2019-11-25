@@ -39,10 +39,13 @@ public class TerminalTransactions {
 			System.out.println("1. View Vehicle");
 			System.out.println("2. Reserve Vehicle");
 			System.out.println("3. Rent a vehicle");
-			System.out.println("4. Create new customer");
-			System.out.println("5. Return a vehicle");
-			System.out.println("7. View all table");
-			System.out.println("10. Quit");
+			System.out.println("4. Return a vehicle");
+			System.out.println("5. Create new customer");
+			System.out.println("6. daily rental log");
+			System.out.println("7. daily rental log for branch");
+			System.out.println("8. daily return log ");
+			System.out.println("9. daily return log for branch");
+			System.out.println("10. quit");
 			System.out.print("Please choose one of the above 5 options: ");
 
 			choice = readInteger(false);
@@ -61,16 +64,25 @@ public class TerminalTransactions {
 						handleRental();
 						break;
 					case 4:
-						handleInsertCustomer();
+						handleReturn();
 						break;
 					case 5:
-						handleReturn();
+						handleInsertCustomer();
+						break;
+					case 6:
+						handleDailyRental();
+						break;
+					case 7:
+						handleDailyBranchRental();
+						break;
+					case 8 :
+						handleDailyReturn();
+						break;
+					case 9 :
+						handleDailyBranchReturn();
 						break;
 					case 10:
 						handleQuitOption();
-						break;
-					case 7:
-						viewTable();
 						break;
 					default:
 						System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
@@ -294,6 +306,84 @@ public class TerminalTransactions {
 	private void viewTable() {
 		delegate.viewAll();
 	}
+
+	private void handleDailyRental(){
+		String location = null;
+		String date;
+
+		System.out.println("Please enter year in form of YYYY-MM-DD");
+		date = readLine().trim();
+
+		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+
+		for (Vehicle v : arr ) {
+			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + " Location: " + v.getLocation());
+		}
+		countType(arr);
+
+
+
+
+	}
+
+	private void handleDailyBranchRental(){
+		String location = null;
+		String date;
+
+		System.out.println("enter branch location: ");
+		location = readLine().trim();
+
+		System.out.println("Please enter date");
+		date = readLine().trim();
+
+		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+
+		for (Vehicle v : arr ) {
+			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
+		}
+		countType(arr);
+
+
+
+	}
+
+	private void handleDailyReturn(){
+		String location = null;
+		String date;
+
+		System.out.println("Please enter date");
+		date = readLine().trim();
+
+		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+
+		for (Vehicle v : arr ) {
+			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
+		}
+		countType(arr);
+
+
+	}
+
+	private void handleDailyBranchReturn(){
+		String location = null;
+		String date;
+
+		System.out.println("enter branch location: ");
+		location = readLine().trim();
+
+		System.out.println("Please enter date");
+		date = readLine().trim();
+
+		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+
+		for (Vehicle v : arr ) {
+			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
+		}
+		countType(arr);
+
+
+	}
+
 	
 	private void handleQuitOption() {
 		System.out.println("Good Bye!");
@@ -307,6 +397,43 @@ public class TerminalTransactions {
 		}
 		
 		delegate.terminalTransactionsFinished();
+	}
+
+	public void countType(ArrayList<Vehicle> arr) {
+		int truck = 0;
+		int suv = 0;
+		int fullsize = 0;
+		int economy = 0;
+		int compact = 0;
+		int midsize = 0;
+		int standard = 0;
+		for (Vehicle rs: arr) {
+			System.out.println(rs.getVtname());
+			String r = rs.getVtname();
+			if (r.equals("Truck")) {
+				truck++;
+			} else if (r.equals("Suv")) {
+				suv++;
+			} else if (r.equals("Full-size")) {
+				fullsize++;
+			} else if (r.equals("Economy")) {
+				economy++;
+			} else if (r.equals("Compact")) {
+				compact++;
+			} else if (r.equals("Mid-size")) {
+				midsize++;
+			} else if (r.equals("Standard")) {
+				standard++;
+		}
+		}
+
+		System.out.println("Truck: " + truck);
+		System.out.println("Suv: " + suv);
+		System.out.println("Fullsize: " + fullsize);
+		System.out.println("Economy: " + economy);
+		System.out.println("Compact: " + compact);
+		System.out.println("Midsize: " + midsize);
+		System.out.println("Standard: " + standard);
 	}
 
 	
