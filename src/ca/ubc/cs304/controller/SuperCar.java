@@ -13,6 +13,8 @@ import ca.ubc.cs304.ui.TerminalTransactions;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import JAVAFX.GUI;
+
 /**
  * This is the main controller class that will orchestrate everything.
  */
@@ -151,5 +153,7 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
 	public static void main(String args[]) {
 		SuperCar superCar = new SuperCar();
 		superCar.start();
+		GUI gui = new GUI();
+		gui.go(args,superCar);
 	}
 }

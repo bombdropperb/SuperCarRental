@@ -134,6 +134,8 @@ public class LoginWindow extends JFrame implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println(usernameField.getText());
+		System.out.println(String.valueOf(passwordField.getPassword()));
 		delegate.login(usernameField.getText(), String.valueOf(passwordField.getPassword()));
 	}
 }
