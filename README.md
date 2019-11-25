@@ -1,6 +1,6 @@
 # SuperCarRental
 
-Run ssh -l <<username>> -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca in terminal replacing <<username>>
+Run ssh -l username -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca in terminal replacing username
 with your CWL.
 
 Upload files sql1.sql and sql3.sql found in the sql package to this remote server.
