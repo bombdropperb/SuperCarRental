@@ -71,8 +71,8 @@ public class GUI extends Application {
         		+ "6. daily rental log\n"
         		+ "7. daily rental log for branch\n"
         		+ "8. daily return log\n"
-        		+ "9. daily return log for branch\n"
-        		+ "10.Quit\n");
+        		+ "9. daily return log for branch\n");
+        		//+ "10.Quit\n");
         GridPane.setConstraints(label1, 0, 0);
         label1.setFont(new Font("Arial", 20));
         // create a label to show the input in text dialog 
@@ -84,9 +84,9 @@ public class GUI extends Application {
      // create a button 
         Button d = new Button("confirm");
         GridPane.setConstraints(d, 2, 1);
-        Label label3 = new Label("Result:");
-        label3.setFont(new Font("Arial", 20));
-        GridPane.setConstraints(label3, 0, 2);
+        //Label label3 = new Label("Result:");
+        //label3.setFont(new Font("Arial", 20));
+        //GridPane.setConstraints(label3, 0, 2);
         
         //TextInputDialog td = new TextInputDialog();
      
@@ -128,9 +128,9 @@ public class GUI extends Application {
     					case 9:
     						GUIhandleDBReturn();
     						break;
-    					case 10:
+    					/*case 10:
     						GUIhandleQuitOption();
-    						break;
+    						break;*/
     					default:
     						GUIInvalidInputHandler();
     						break;
@@ -146,7 +146,7 @@ public class GUI extends Application {
         grid.getChildren().add(label2); 
         grid.getChildren().add(tf); 
         grid.getChildren().add(d); 
-        grid.getChildren().add(label3); 
+        //grid.getChildren().add(label3); 
         
      // create a scene 
         Scene sc = new Scene(grid, 500, 500); 
