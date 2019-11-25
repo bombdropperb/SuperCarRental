@@ -1,31 +1,35 @@
 package ca.ubc.cs304.model;
 
-public class Reservation {
-    private final int confNo;
-    private final String vtname;
+public class Rental {
+    private final int rid;
+    private final String vlicense;
     private final int dLicense;
     private final String fromDate;
     private final int fromTime;
     private final String toDate;
     private final int toTime;
+    private final int odometer;
+    private final int confNo;
 
-
-    public Reservation(int confNo, String vtname, int dLicense, String fromDate, int fromTime, String toDate, int toTime ) {
-        this.confNo = confNo;
-        this.vtname = vtname;
-        this.dLicense = dLicense;
+    public Rental(int rid, String vlicense, int dLicense, String fromDate, int fromTime, String toDate, int toTime, int odometer, int confNo){
+        this.rid = rid;
+        this.vlicense = vlicense;
+        this. dLicense = dLicense;
         this.fromDate = fromDate;
         this.fromTime = fromTime;
         this.toDate = toDate;
         this.toTime = toTime;
+        this.odometer = odometer;
+        this.confNo = confNo;
     }
-
     public int getConfNo() {
         return confNo;
     }
 
-    public String getVtname() {
-        return vtname;
+    public int getRid() {return rid;}
+
+    public String getvLicense() {
+        return vlicense;
     }
 
     public int getdLicense() {
@@ -43,7 +47,10 @@ public class Reservation {
     public String getToDate() {
         return toDate;
     }
+
     public int getToTime() {
         return toTime;
     }
+
+    public int getOdometer() {return odometer;}
 }

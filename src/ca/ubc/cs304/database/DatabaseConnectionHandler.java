@@ -1,17 +1,15 @@
 package ca.ubc.cs304.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.Customer;
-import ca.ubc.cs304.model.Reservation;
-import ca.ubc.cs304.model.Vehicle;
+import ca.ubc.cs304.model.*;
+import oracle.sql.DATE;
+
+import javax.sound.midi.Soundbank;
+import javax.xml.transform.Result;
 
 /**
  * This class handles all database related transactions
@@ -43,27 +41,98 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public ArrayList<Vehicle> viewVehicle(String vtname, String location, String time) {
-		// TODO
-		System.out.println("in view");
-		ArrayList<Vehicle> result = new ArrayList<>();
-		String sql = "";
-		/*if (vtname == null && time == null && location == null) {
-			sql = "SELECT * FROM vehicles";
-		}else if (vtname != null && location == null && time == null )  {
-			sql = "SELECT * FROM vehicles WHERE vtname = ? ";
-		}else if (vtname != null && location == null && time == null)  {
-			sql = "SELECT * FROM vehicles WHERE vehicles_vtname = ? AND vehicles_location = ?";
-		}*/
-		System.out.println("About to try sql");
-		try {
-			/*PreparedStatement ps = connection.prepareStatement("SELECT * FROM vehicles");
-			// ps.setString(1, vtname);
-			// ps.setString(2,location);
-			ResultSet rs = ps.executeQuery();*/
+    public ArrayList<Vehicle> dailyRentalBranch(String date, String specifiedBranch) {
 
-			Statement ps = connection.createStatement();
-			ResultSet rs = ps.executeQuery("SELECT * FROM vehicles");
+	    ArrayList<Vehicle> cars = new ArrayList<>();
+        String sql;
+
+        if (specifiedBranch == null){
+            sql = "SELECT * FROM vehicles v , rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = to_date('" +
+                    date +"','YYYY/MM/DD') ORDER BY v.location, v.vtname";
+        }else {
+            sql = "SELECT * FROM vehicles v , rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = to_date('" +
+                    date +"','YYYY/MM/DD') AND v.location = '" + specifiedBranch + "'";
+        }
+        System.out.println(sql);
+
+        try {
+
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery(sql);
+
+            while(rs.next()) {
+                Vehicle vehicle = new Vehicle(
+                        rs.getInt("vid"),
+                        rs.getString("vlicense"),
+                        rs.getString("odometer"),
+                        rs.getString("status"),
+                        rs.getString("vtname"),
+                        rs.getString("location"));
+                cars.add(vehicle);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+
+        return cars;
+    }
+
+	public ArrayList<Vehicle> dailyReturnBranch(String date, String specifiedBranch) {
+        ArrayList<Vehicle> cars = new ArrayList<>();
+        String sql;
+
+        if (specifiedBranch == null){
+            sql = "SELECT * FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
+                    "re.dateR = to_date('" + date +"','YYYY/MM/DD') ORDER BY v.location, v.vtname";
+        }else {
+            sql = "SELECT * FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
+                    "re.dateR = to_date('" + date +"','YYYY/MM/DD') AND v.location = '"+ specifiedBranch + "' ORDER BY v.location, v.vtname";
+        }
+        System.out.println(sql);
+
+        try {
+
+            Statement ps = connection.createStatement();
+            ResultSet rs = ps.executeQuery(sql);
+
+            while(rs.next()) {
+                Vehicle vehicle = new Vehicle(
+                        rs.getInt("vid"),
+                        rs.getString("vlicense"),
+                        rs.getString("odometer"),
+                        rs.getString("status"),
+                        rs.getString("vtname"),
+                        rs.getString("location"));
+                cars.add(vehicle);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return cars;
+    }
+
+    public ArrayList<Vehicle> viewVehicle(String vtname, String location, Date time) {
+
+		ArrayList<Vehicle> result = new ArrayList<>();
+		String sql = "SELECT * FROM vehicles WHERE status = 'Available' ";;
+
+		if (!vtname.isEmpty()) {
+			sql = sql + "AND vtname = " + "'" + vtname + "'";
+		}
+		if (!location.isEmpty() )  {
+			sql = sql+ "AND location = " + "'" +location + "'";
+		}
+		if (!(time == null))  {
+			sql = sql;
+		}
+		System.out.println(sql);
+
+		try {
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
 
 			while(rs.next()) {
 				Vehicle vehicle = new Vehicle(rs.getInt("vid"),
@@ -88,9 +157,8 @@ public class DatabaseConnectionHandler {
 	}
 
 	public Boolean existingCustomer(int dLicense) {
-		// TODO
+
 		try {
-			System.out.println("in existing customers");
 			PreparedStatement ps = connection.prepareStatement(" SELECT * FROM customer WHERE dLicense = ?");
 			ps.setInt(1, dLicense);
 			ResultSet res = ps.executeQuery();
@@ -113,7 +181,7 @@ public class DatabaseConnectionHandler {
 	try{
 		System.out.println("in insert customers");
 		PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
-		// TODO
+
 		ps.setInt(1, customer.getPhoneNumber());
 		ps.setString(2, customer.getName());
 		ps.setString(3, customer.getAddress());
@@ -133,24 +201,210 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void reserveVehicle (Reservation res) {
+	public Boolean reserveVehicle (Reservation res) {
 		try {
 			// TODO
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,to_date(?,'YYYY/MM/DD'),?,?,?)");
 			// check ordering
 			ps.setInt(1, res.getConfNo());
 			ps.setString(2, res.getVtname());
 			ps.setInt(3, res.getdLicense());
 			ps.setString(4, res.getFromDate());
-			ps.setString(5, res.getFromTime());
+			ps.setInt(5, res.getFromTime());
 			ps.setString(6, res.getToDate());
-			ps.setString(7, res.getToTime());
+			ps.setInt(7, res.getToTime());
+
+			int row = ps.executeUpdate();
+
+			if(row!= 0 ) {
+				return true;
+			}
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+
+		return false;
+	}
+
+	public Boolean existVehicleType(String vtname) {
+
+		try {
+			String sql  = "SELECT * FROM vehicles WHERE vtname = '" + vtname + "'";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			// check ordering
+			ResultSet rs =  ps.executeQuery();
+
+			if( rs.next() ) {
+				return true;
+			}
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+		return false;
+	}
+
+	public Boolean validVlicense(String id) {
+		String sql = "SELECT * FROM vehicles WHERE status = 'Available' AND vlicense = " + "'"+ id + "'";
+		try {
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
+
+			if(rs.next()) {
+				System.out.println("available vehicle");
+				return true;
+			}
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+
+		return false;
+
+	}
+
+
+
+	public Boolean rentVehicle(Rental rental) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO rentals VALUES (?,?,?,?,?,?,?,?,?)");
+			ps.setInt(1, rental.getRid());
+			ps.setString(2, rental.getvLicense());
+			ps.setInt(3, rental.getdLicense());
+			ps.setString(4, rental.getFromDate());
+			ps.setInt(5, rental.getFromTime());
+			ps.setString(6, rental.getToDate());
+			ps.setInt(7, rental.getToTime());
+			ps.setInt(8, rental.getOdometer());
+			if(rental.getConfNo() == 0) {
+				ps.setNull(9, Types.INTEGER);
+			}else {
+				ps.setInt(9, rental.getConfNo());
+			}
+
+
+			int row = ps.executeUpdate();
+
+			if (row != 0) {
+				updateStatus(rental.getvLicense());
+				return true;
+			}
+
+			connection.commit();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+		return false;
+	}
+
+	public void updateStatus(String vlicense) {
+
+		try {
+			String sql = "UPDATE vehicles SET status = 'Rented' WHERE vlicense =" + "'" + vlicense + "'";
+
+			PreparedStatement ps2 = connection.prepareStatement(sql);
+
+			int row = ps2.executeUpdate();
+
+			if (row == 0) {
+				System.out.println("Status updated failed");
+			}
+
+			connection.commit();
+
+			ps2.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void returnVehicle(Return r) {
+
+		try {
+			if(!existRental(r.getRid())) {
+				return;
+			}
+
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?,?)");
+			ps.setInt(1, r.getRid());
+			ps.setString(2, r.getDate());
+			ps.setInt(3, r.getTime());
+			ps.setInt(4, r.getOdometer());
+			ps.setString(5, r.getFullTank());
+			ps.setInt(6, r.getValue());
 
 			ps.executeUpdate();
 
 			connection.commit();
 
 			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public Boolean existRental(int id){
+		try {
+			String sql = "SELECT * FROM rentals WHERE rid = " + "'" +id + "'";
+			System.out.println(sql);
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet set = ps.executeQuery();
+
+			if (set.next()) {
+				System.out.println("Rental exists");
+				return true;
+			}
+
+			connection.commit();
+
+			ps.close();
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+		return false;
+
+	}
+	public void viewAll(){
+
+		try {
+			String sql = "SELECT table_name from user_tables" ;
+
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			ResultSet result = ps.executeQuery();
+
+			while (result.next()) {
+				System.out.println(result.getString("table_name"));
+			}
+
+
+
+			connection.commit();
+
+			ps.close();
+
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			rollbackConnection();
@@ -206,7 +460,7 @@ public class DatabaseConnectionHandler {
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
-		
+
 //    		// get info on ResultSet
 //    		ResultSetMetaData rsmd = rs.getMetaData();
 //

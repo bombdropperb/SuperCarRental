@@ -3,15 +3,14 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.Customer;
-import ca.ubc.cs304.model.Reservation;
-import ca.ubc.cs304.model.Vehicle;
+import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import JAVAFX.GUI;
 
@@ -85,7 +84,7 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
     }
 
 	@Override
-	public Boolean existingCustomer(int dLicense) {
+		public Boolean existingCustomer(int dLicense) {
 		return dbHandler.existingCustomer(dLicense);
 	}
 
@@ -95,14 +94,40 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
 	}
 
 	@Override
-	public void reserveVehicle(Reservation reserve) {
-		dbHandler.reserveVehicle(reserve);
+	public Boolean reserveVehicle(Reservation reserve) {
+		return dbHandler.reserveVehicle(reserve);
 	}
 
 	@Override
-	public ArrayList<Vehicle> viewVehicle(String vtname, String time, String location) {
-		return dbHandler.viewVehicle(vtname, time, location);
+	public ArrayList<Vehicle> viewVehicle(String vtname, String location, Date time) {
+		return dbHandler.viewVehicle(vtname, location, time);
 	}
+
+	@Override
+	public Boolean rentVehicle(Rental rent) {
+		return dbHandler.rentVehicle(rent);
+	}
+
+	@Override
+	public Boolean validVlicense(String id) {
+		return dbHandler.validVlicense(id);
+	}
+
+	@Override
+	public void returnVehicle(Return r) {
+		dbHandler.returnVehicle(r);
+	}
+
+	@Override
+	public void viewAll() {
+		dbHandler.viewAll();
+	}
+
+	@Override
+	public Boolean existVehicleType(String vtname) {
+		return dbHandler.existVehicleType(vtname);
+	}
+
 
 	/**
 	 * TermainalTransactionsDelegate Implementation
@@ -146,7 +171,18 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
     	
     	System.exit(0);
     }
-    
+
+	@Override
+	public ArrayList<Vehicle> dailyRental(String d, String location) {
+		return dbHandler.dailyRentalBranch( d, location);
+	}
+
+	@Override
+	public ArrayList<Vehicle> dailyReturn(String  d, String location) {
+    	return dbHandler.dailyReturnBranch(d, location);
+
+	}
+
 	/**
 	 * Main method called at launch time
 	 */
