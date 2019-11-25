@@ -41,284 +41,18 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-    public Integer getTotalRev (String typ, String date, String specifiedBranch) {
-
-        String sql = "";
-        Integer number = 0;
-
-        if (specifiedBranch == null){
-            sql = "SELECT SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "'";
-        }else {
-            sql = "SELECT SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date +"' AND v.location = '"+ specifiedBranch + "'";
-        }
-
-        // sql = "SELECT * FROM vehicles v, rentals r";
-        System.out.println(sql);
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                number = rs.getInt("ADR");
-                // System.out.println(number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return number;
-    }
-
-    public HashMap<String, Integer> revByBranch (String typ, String date, String specifiedBranch) {
-
-        HashMap<String, Integer> res = new HashMap<>();
-        String sql = "";
-
-        if (specifiedBranch == null) {
-            sql = "SELECT v.location, SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "' GROUP BY v.location";
-        } else {
-            sql = "SELECT v.location, SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "' AND v.location = '" + specifiedBranch + "' GROUP BY v.location";
-        }
-
-        // sql = "SELECT * FROM vehicles v, rentals r";
-        System.out.println(sql);
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                String key = rs.getString("location");
-                Integer number = rs.getInt("ADR");
-                // System.out.println(key);
-                // System.out.println(number);
-                res.put(key, number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return res;
-    }
-
-    public HashMap<String, Integer> revByType (String typ, String date, String specifiedBranch) {
-
-        HashMap<String, Integer> res = new HashMap<>();
-        String sql = "";
-
-        if (specifiedBranch == null) {
-            sql = "SELECT vtname, SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "' GROUP BY v.vtname";
-        } else {
-            sql = "SELECT vtname, SUM(re.valueR) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "' AND v.location = '" + specifiedBranch + "' GROUP BY v.vtname";
-
-            // sql = "SELECT * FROM vehicles v, rentals r";
-            System.out.println(sql);
-        }
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                String key = rs.getString("vtname");
-                Integer number = rs.getInt("ADR");
-                // System.out.println(number);
-                res.put(key, number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return res;
-	}
-
-    public Integer getTotalOfRented (String typ, String date, String specifiedBranch) {
-
-        String sql = "";
-        Integer number = 0;
-
-        if (typ.equals("rent")) {
-            if (specifiedBranch == null) {
-                sql = "SELECT COUNT(v.vlicense) AS Adr FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                        date + "'";
-            } else {
-                sql = "SELECT COUNT(v.vlicense) AS Adr FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                        date + "' AND v.location = '" + specifiedBranch + "'";
-            }
-        }
-        else if (typ.equals("return")) {
-            if (specifiedBranch == null){
-                sql = "SELECT COUNT(v.vlicense) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                        "re.dateR = '" + date + "'";
-            }else {
-                sql = "SELECT COUNT(v.vlicense) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                        "re.dateR = '" + date +"' AND v.location = '"+ specifiedBranch + "'";
-            }
-        }
-
-        // sql = "SELECT * FROM vehicles v, rentals r";
-        System.out.println(sql);
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                number = rs.getInt("ADR");
-                // System.out.println(number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return number;
-    }
-
-    public HashMap<String, Integer> getMapOfTotalRentedByBranch (String typ, String date, String specifiedBranch) {
-
-        HashMap<String, Integer> res = new HashMap<>();
-        String sql = "";
-
-        if (typ.equals("rent")) {
-            if (specifiedBranch == null) {
-                sql = "SELECT v.location, COUNT(v.vlicense) AS Adr FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                        date + "' GROUP BY v.location";
-            }
-        }
-        else if (typ.equals("return")) {
-            if (specifiedBranch == null){
-                sql = "SELECT v.location, COUNT(v.vlicense) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                        "re.dateR = '" + date + "' GROUP BY v.location";
-            }
-        }
-
-        // sql = "SELECT * FROM vehicles v, rentals r";
-        System.out.println(sql);
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                String key = rs.getString("location");
-                Integer number = rs.getInt("ADR");
-                // System.out.println(key);
-                // System.out.println(number);
-                res.put(key, number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return res;
-    }
-
-    public HashMap<String, Integer> getMapOfTotalRentedByVType (String typ, String date, String specifiedBranch) {
-
-        HashMap<String, Integer> res = new HashMap<>();
-        String sql = "";
-
-        if (typ.equals("rent")) {
-            if (specifiedBranch == null) {
-                sql = "SELECT vtname, COUNT(v.vlicense) AS Adr FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                        date + "' GROUP BY v.vtname";
-            } else {
-                sql = "SELECT vtname, COUNT(v.vlicense) AS Adr FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                        date + "' AND v.location = '" + specifiedBranch + "' GROUP by v.vtname";
-            }
-        }
-        else if (typ.equals("return")) {
-            if (specifiedBranch == null){
-                sql = "SELECT vtname, COUNT(v.vlicense) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                        "re.dateR = '" + date + "' GROUP BY v.vtname";
-            }else {
-                sql = "SELECT vtname, COUNT(v.vlicense) AS Adr FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                        "re.dateR = '" + date +"' AND v.location = '"+ specifiedBranch + "' GROUP BY v.vtname";
-            }
-        }
-
-        // sql = "SELECT * FROM vehicles v, rentals r";
-        System.out.println(sql);
-
-        try {
-
-            Statement ps = connection.createStatement();
-            ResultSet rs = ps.executeQuery(sql);
-            ResultSetMetaData rmd = rs.getMetaData();
-            // System.out.println(rmd.getColumnName(2));
-
-            while (rs.next()) {
-                // System.out.println("running rs");
-                String key = rs.getString("vtname");
-                Integer number = rs.getInt("ADR");
-                // System.out.println(number);
-                res.put(key, number);
-            }
-
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-        return res;
-    }
-
     public ArrayList<Vehicle> dailyRentalBranch(String date, String specifiedBranch) {
 
 	    ArrayList<Vehicle> cars = new ArrayList<>();
         String sql;
 
         if (specifiedBranch == null){
-            sql = "SELECT * FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                    date + "' ORDER BY v.location, v.vtname";
+            sql = "SELECT * FROM vehicles v , rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = to_date('" +
+                    date +"','YYYY/MM/DD') ORDER BY v.location, v.vtname";
         }else {
-            sql = "SELECT * FROM vehicles v, rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = '" +
-                    date + "' AND v.location = '" + specifiedBranch + "' ORDER BY v.location, v.vtname";
+            sql = "SELECT * FROM vehicles v , rentals r WHERE v.vlicense = r.vlicense AND r.fromDate = to_date('" +
+                    date +"','YYYY/MM/DD') AND v.location = '" + specifiedBranch + "'";
         }
-        // sql = "SELECT * FROM vehicles v, rentals r";
         System.out.println(sql);
 
         try {
@@ -327,7 +61,6 @@ public class DatabaseConnectionHandler {
             ResultSet rs = ps.executeQuery(sql);
 
             while(rs.next()) {
-                // System.out.println("running rs");
                 Vehicle vehicle = new Vehicle(
                         rs.getInt("vid"),
                         rs.getString("vlicense"),
@@ -336,18 +69,12 @@ public class DatabaseConnectionHandler {
                         rs.getString("vtname"),
                         rs.getString("location"));
                 cars.add(vehicle);
-//                System.out.println(rs.getInt("rid"));
-//                System.out.println(rs.getString("vlicense"));
             }
-
-            rs.close();
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
             rollbackConnection();
         }
 
-        System.out.println("Car Size: " + cars.size());
         return cars;
     }
 
@@ -357,10 +84,10 @@ public class DatabaseConnectionHandler {
 
         if (specifiedBranch == null){
             sql = "SELECT * FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date + "' ORDER BY v.location, v.vtname";
+                    "re.dateR = to_date('" + date +"','YYYY/MM/DD') ORDER BY v.location, v.vtname";
         }else {
             sql = "SELECT * FROM vehicles v , rentals r, return re WHERE v.vlicense = r.vlicense AND r.rid = re.rid AND " +
-                    "re.dateR = '" + date +"' AND v.location = '"+ specifiedBranch + "' ORDER BY v.location, v.vtname";
+                    "re.dateR = to_date('" + date +"','YYYY/MM/DD') AND v.location = '"+ specifiedBranch + "' ORDER BY v.location, v.vtname";
         }
         System.out.println(sql);
 
@@ -383,7 +110,6 @@ public class DatabaseConnectionHandler {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
             rollbackConnection();
         }
-        System.out.println(cars.size());
         return cars;
     }
 
@@ -478,7 +204,7 @@ public class DatabaseConnectionHandler {
 	public Boolean reserveVehicle (Reservation res) {
 		try {
 			// TODO
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?,?,?,to_date(?,'YYYY/MM/DD'),?,?,?)");
 			// check ordering
 			ps.setInt(1, res.getConfNo());
 			ps.setString(2, res.getVtname());

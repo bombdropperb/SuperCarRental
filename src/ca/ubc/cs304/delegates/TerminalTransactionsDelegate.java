@@ -28,10 +28,4 @@ public interface TerminalTransactionsDelegate {
 	public void terminalTransactionsFinished();
 	public ArrayList<Vehicle> dailyRental(String d, String location);
 	public ArrayList<Vehicle> dailyReturn(String d, String location);
-	public HashMap<String, Integer> getMapOfTotalRentedByVType (String typ, String date, String specifiedBranch);
-    public HashMap<String, Integer> getMapOfTotalRentedByBranch (String typ, String date, String specifiedBranch);
-    public Integer getTotalOfRented (String typ, String date, String specifiedBranch);
-    public HashMap<String, Integer> revByType (String typ, String date, String specifiedBranch);
-    public HashMap<String, Integer> revByBranch (String typ, String date, String specifiedBranch);
-    public Integer getTotalRev (String typ, String date, String specifiedBranch);
 }
