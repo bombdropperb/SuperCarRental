@@ -38,22 +38,22 @@ insert into vehicles values (24, 'SCR 124', 41000, 'Available', 'Economy', 'Rich
 insert into vehicles values (25, 'SCR 125', 51000, 'Available', 'Full-size', 'Richmond');
 insert into vehicles values (26, 'SCR 126', 761000, 'Available', 'Suv', 'Richmond');
 
-insert into reservation values (1, 'Truck', 4, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 1500);
-insert into reservation values (2, 'Economy', 2, to_date('2019-11-21','YYYY/MM/DD'), 700, to_date('2019-11-22','YYYY/MM/DD'), 2400);
+insert into reservation values (1, 'Truck', 4, '21NOV19', 700, '22NOV19', 1500);
+insert into reservation values (2, 'Economy', 2, '21NOV19', 700, '22NOV19', 2400);
 
-insert into rentals values (10, 'SCR 109', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (20, 'SCR 110', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, 1);
-insert into rentals values (30, 'SCR 111', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (40, 'SCR 112', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-21','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (50, 'SCR 113', 4,to_date('2019-11-21','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (60, 'SCR 114', 4,to_date('2019-11-22','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (70, 'SCR 115', 4,to_date('2019-11-22','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (80, 'SCR 116', 4,to_date('2019-11-22','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (90, 'SCR 117', 4,to_date('2019-11-22','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
-insert into rentals values (100, 'SCR 118', 4,to_date('2019-11-22','YYYY/MM/DD'), 900, to_date('2019-11-22','YYYY/MM/DD'),800, 1200, null);
+insert into rentals values (10, 'SCR 109', 4,'21NOV19', 900, '21NOV19',800, 1200, null);
+insert into rentals values (20, 'SCR 110', 4,'21NOV19', 900, '21NOV19',800, 1200, 1);
+insert into rentals values (30, 'SCR 111', 4,'21NOV19', 900, '21NOV19',800, 1200, null);
+insert into rentals values (40, 'SCR 112', 4,'21NOV19', 900, '21NOV19',800, 1200, null);
+insert into rentals values (50, 'SCR 113', 4,'21NOV19', 900, '22NOV19',800, 1200, null);
+insert into rentals values (60, 'SCR 114', 4,'22NOV19', 900, '22NOV19',800, 1200, null);
+insert into rentals values (70, 'SCR 115', 4,'22NOV19', 900, '22NOV19',800, 1200, null);
+insert into rentals values (80, 'SCR 116', 4,'22NOV19', 900, '22NOV19',800, 1200, null);
+insert into rentals values (90, 'SCR 117', 4,'22NOV19', 900, '22NOV19',800, 1200, null);
+insert into rentals values (100, 'SCR 118', 4,'22NOV19', 900, '22NOV19',800, 1200, null);
 
-insert into return values (10,to_date('2019-11-21','YYYY/MM/DD'),800, 1200,'true', 100);
-insert into return values (30,to_date('2019-11-21','YYYY/MM/DD'),800, 1200,'true', 100);
-insert into return values (50,to_date('2019-11-22','YYYY/MM/DD'),800, 1200,'true', 100);
-insert into return values (70,to_date('2019-11-22','YYYY/MM/DD'),800, 1200,'true', 100);
-insert into return values (90,to_date('2019-11-22','YYYY/MM/DD'),800, 1200,'true', 100);
+insert into return values (10,'21NOV19',800, 1200,'true', 100);
+insert into return values (30,'21NOV19',800, 1200,'true', 100);
+insert into return values (50,'22NOV19',800, 1200,'true', 100);
+insert into return values (70,'22NOV19',800, 1200,'true', 100);
+insert into return values (90,'22NOV19',800, 1200,'true', 100);

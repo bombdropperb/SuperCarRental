@@ -18,14 +18,14 @@ import JAVAFX.GUI;
  * This is the main controller class that will orchestrate everything.
  */
 public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelegate {
-	private DatabaseConnectionHandler dbHandler = null;
+	public DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
 	public SuperCar() {
 		dbHandler = new DatabaseConnectionHandler();
 	}
 	
-	private void start() {
+	public void start() {
 		loginWindow = new LoginWindow();
 		loginWindow.showFrame(this);
 	}
@@ -183,7 +183,38 @@ public class SuperCar implements LoginWindowDelegate, TerminalTransactionsDelega
 
 	}
 
-	/**
+    @Override
+    public HashMap<String, Integer> getMapOfTotalRentedByVType (String typ, String date, String specifiedBranch) {
+        return dbHandler.getMapOfTotalRentedByVType(typ, date, specifiedBranch);
+    }
+
+    @Override
+    public HashMap<String, Integer> getMapOfTotalRentedByBranch (String typ, String date, String specifiedBranch) {
+        return dbHandler.getMapOfTotalRentedByBranch(typ, date, specifiedBranch);
+    }
+
+    @Override
+    public Integer getTotalOfRented (String typ, String date, String specifiedBranch) {
+        return dbHandler.getTotalOfRented(typ, date, specifiedBranch);
+    }
+
+    @Override
+    public HashMap<String, Integer> revByType (String typ, String date, String specifiedBranch) {
+        return dbHandler.revByType(typ, date, specifiedBranch);
+    }
+
+    @Override
+    public HashMap<String, Integer> revByBranch (String typ, String date, String specifiedBranch) {
+        return dbHandler.revByBranch(typ, date, specifiedBranch);
+    }
+
+    @Override
+    public Integer getTotalRev (String typ, String date, String specifiedBranch) {
+        return dbHandler.getTotalRev(typ, date, specifiedBranch);
+    }
+
+
+    /**
 	 * Main method called at launch time
 	 */
 	public static void main(String args[]) {

@@ -36,9 +36,9 @@ create table reservation (
 	confNo char(20) not null PRIMARY KEY,
 	vtname char(20) not null references vehicleType,
 	dlicense char(20)not null references customer,
-	fromDate DATE not null,
+	fromDate char(20) not null,
 	fromTime integer CHECK (fromTime >= 0 AND fromTime <= 2400),
-	toDate DATE not null,
+	toDate char(20) not null,
 	toTime integer CHECK (toTime >= 0 AND toTime <= 2400)
 );
 
@@ -46,9 +46,9 @@ create table rentals (
 	rid integer not null PRIMARY KEY,
 	vlicense char(20) not null references vehicles,
 	dlicense char(20) not null references customer,
-	fromDate DATE not null,
+	fromDate char(20) not null,
 	fromTime integer CHECK (fromTime >= 0 AND fromTime <= 2400),
-	toDate DATE not null,
+	toDate char(20) not null,
 	toTime integer CHECK (toTime >= 0 AND toTime <= 2400),
 	odometer integer not null,
 	confNo char(20) references reservation
@@ -56,7 +56,7 @@ create table rentals (
 
 create table return (
 	rid integer not null references rentals PRIMARY KEY,
-	dateR DATE not null,
+	dateR char(20) not null,
 	timeR integer CHECK (timeR >= 0 AND timeR<= 2400),
 	odometer char(20) not null,
 	fulltank char(20) not null,

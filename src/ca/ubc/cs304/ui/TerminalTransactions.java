@@ -3,9 +3,12 @@ package ca.ubc.cs304.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Array;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.*;
@@ -319,11 +322,26 @@ public class TerminalTransactions {
 		for (Vehicle v : arr ) {
 			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + " Location: " + v.getLocation());
 		}
-		countType(arr);
 
+        HashMap<String, Integer> rentedByVehicles = delegate.getMapOfTotalRentedByVType("rent", date, location);
+        Set<String> keys = rentedByVehicles.keySet();
+        System.out.println("Vehicles by Category:");
+        for (String key: keys) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByVehicles.get(key));
+        }
 
+        HashMap<String, Integer> rentedByBranch = delegate.getMapOfTotalRentedByBranch("rent", date, location);
+        Set<String> keysB = rentedByBranch.keySet();
+        System.out.println("Vehicles by Branch:");
+        for (String key: keysB) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByBranch.get(key));
+        }
 
-
+        Integer totalRent = delegate.getTotalOfRented("rent", date, location);
+        System.out.println("Total Daily Rented: " + totalRent);
+        // countType(arr);
 	}
 
 	private void handleDailyBranchRental(){
@@ -341,7 +359,19 @@ public class TerminalTransactions {
 		for (Vehicle v : arr ) {
 			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
 		}
-		countType(arr);
+
+        HashMap<String, Integer> rentedByVehicles = delegate.getMapOfTotalRentedByVType("rent", date, location);
+        Set<String> keys = rentedByVehicles.keySet();
+        System.out.println("Vehicles by Category:");
+        for (String key: keys) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByVehicles.get(key));
+        }
+
+        Integer totalRent = delegate.getTotalOfRented("rent", date, location);
+        System.out.println("Total Daily Rented: " + totalRent);
+
+		// countType(arr);
 
 
 
@@ -354,13 +384,52 @@ public class TerminalTransactions {
 		System.out.println("Please enter date");
 		date = readLine().trim();
 
-		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+		ArrayList<Vehicle> arr = delegate.dailyReturn(date, location);
 
 		for (Vehicle v : arr ) {
 			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
 		}
-		countType(arr);
 
+        HashMap<String, Integer> rentedByVehicles = delegate.getMapOfTotalRentedByVType("return", date, location);
+        Set<String> keys = rentedByVehicles.keySet();
+        System.out.println("Vehicles by Category:");
+        for (String key: keys) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByVehicles.get(key));
+        }
+
+        HashMap<String, Integer> rentedByBranch = delegate.getMapOfTotalRentedByBranch("return", date, location);
+        Set<String> keysB = rentedByBranch.keySet();
+        System.out.println("Vehicles by Branch:");
+        for (String key: keysB) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByBranch.get(key));
+        }
+
+        HashMap<String, Integer> revByType = delegate.revByType("return", date, location);
+        Set<String> keysRBT = revByType.keySet();
+        System.out.println("Revenue by Type:");
+        for (String key: keysRBT) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + revByType.get(key));
+        }
+
+        HashMap<String, Integer> revByBranch = delegate.revByBranch("return", date, location);
+        Set<String> keysRBB = revByBranch.keySet();
+        System.out.println("Revenue by Branch");
+        for (String key: keysRBB) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + revByBranch.get(key));
+        }
+
+        Integer totalRent = delegate.getTotalOfRented("return", date, location);
+        System.out.println("Total Daily Returned: " + totalRent);
+
+        Integer totalRev = delegate.getTotalRev("return", date, location);
+        System.out.println("Total Daily Revenue: " + totalRev);
+
+
+        // countType(arr);
 
 	}
 
@@ -374,14 +443,35 @@ public class TerminalTransactions {
 		System.out.println("Please enter date");
 		date = readLine().trim();
 
-		ArrayList<Vehicle> arr = delegate.dailyRental(date, location);
+		ArrayList<Vehicle> arr = delegate.dailyReturn(date, location);
 
 		for (Vehicle v : arr ) {
 			System.out.println("VID: "+ v.getVid() + " Vtype: " + v.getVtname() + "Location: " + v.getLocation());
 		}
-		countType(arr);
 
+        HashMap<String, Integer> rentedByVehicles = delegate.getMapOfTotalRentedByVType("return", date, location);
+        Set<String> keys = rentedByVehicles.keySet();
+        System.out.println("Vehicles by Category:");
+        for (String key: keys) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + rentedByVehicles.get(key));
+        }
 
+        HashMap<String, Integer> revByType = delegate.revByType("return", date, location);
+        Set<String> keysRBT = revByType.keySet();
+        System.out.println("Revenue by Type:");
+        for (String key: keysRBT) {
+            // System.out.println("Key: " + key + ", Val: " + rentedByVehicles.get(key));
+            System.out.println(key + ": " + revByType.get(key));
+        }
+
+        Integer totalRent = delegate.getTotalOfRented("return", date, location);
+        System.out.println("Total Daily Returned: " + totalRent);
+
+        Integer totalRev = delegate.getTotalRev("return", date, location);
+        System.out.println("Total Daily Revenue: " + totalRev);
+
+		// countType(arr);
 	}
 
 	
